@@ -4,15 +4,21 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * @author Renzo Barrios
+ */
+
 public class LcdImpresor {
 
+    // Caracteres fijos
     static final String CARACTER_VERTICAL = "|";
     static final String CARACTER_HORIZONTAL = "-";
     static final String POSICION_X = "X";
     static final String POSICION_Y = "Y";
+
+    // atributos objetos de clases
     public Matriz matriz = new Matriz();
     public SieteSegmento sieteSegmentos = new SieteSegmento();
-    // TODO code application logic here
 
     public LcdImpresor(){
     }
@@ -23,18 +29,18 @@ public class LcdImpresor {
      * @param cadenaNumeros cadena que contiene el tamaño y los numeros a imprimir
      * @param espacioDigitos Espacio Entre digitos
      */
-    public void procesarEntrada(String cadenaNumeros, int espacioDigitos) { //metodo encargado de la validacion de la entrada, no "procesa" algo exactamente
+    public void procesarEntrada(String cadenaNumeros, int espacioDigitos) {
 
         String[] cadenaDigitos;
         int tamañoDigito;
 
         verificarSeparadorDeCadena(cadenaNumeros);
-        cadenaDigitos = cadenaNumeros.split(","); //Se hace el split de la cadena de numeros digitada [X,ABCDE]
+        cadenaDigitos = cadenaNumeros.split(",");
 
         verificarCantidadParametros(cadenaDigitos,cadenaNumeros);
         tamañoDigito =  asignacionTamaño(cadenaDigitos[0]);
 
-        validarImpresionDigitos(tamañoDigito, cadenaDigitos[1],espacioDigitos); // Realiza la impresion del numero, tam es el tamaño, parametros[1] manda los numeros que se van a imprimir "12345.." y el espacio entre ellos
+        validarImpresionDigitos(tamañoDigito, cadenaDigitos[1],espacioDigitos);
     }
 
     /**
@@ -72,17 +78,14 @@ public class LcdImpresor {
      * @param parametroCadena String que contiene el tamaño de los numeros
      * @return string convertido a entero
      */
-    public int asignacionTamaño(String parametroCadena)
-    {
+    public int asignacionTamaño(String parametroCadena){
         int tamañoNumero;
 
-        if(cadenaEsNumerico(parametroCadena))
-        {
+        if(cadenaEsNumerico(parametroCadena)){
             tamañoNumero = Integer.parseInt(parametroCadena);
         }
-        else
-        {
-            throw new IllegalArgumentException("Parametro Size [" + parametroCadena
+        else{
+            throw new IllegalArgumentException("Parametro Tamaño [" + parametroCadena
                     + "] no es un numero");
         }
         return tamañoNumero;
@@ -92,19 +95,19 @@ public class LcdImpresor {
      * Metodo encargado de validar y convertir si una cadena es numerica
      *
      * @param cadena variable a convertir en tipo numerico
+     * @return un boolean con un verdadero o falso si convirtio la cadena
      */
     static boolean cadenaEsNumerico(String cadena){
-        try
-        {
+        try{
             Integer.parseInt(cadena);
             return true;
-        } catch (NumberFormatException ex) {
+        } catch (NumberFormatException ex){
             return false;
         }
     }
 
     /**
-     * Metodo encargado de validar los paramrametros ingresados sean digitos,
+     * valida los paramrametros ingresados sean digitos,
      * comprobar los puntos fijos de cada digito e impresion de los digitos
      *
      * @param tamañoCadenaDigitos Tamaño de cada digito
@@ -117,11 +120,11 @@ public class LcdImpresor {
         char[] vectorDeDigitos;
 
         matriz.crearMatriz(tamañoCadenaDigitos,cadenaDigitos,espacioDigito);
-        vectorDeDigitos = cadenaDigitos.toCharArray(); // crea el arreglo de digitos
+        vectorDeDigitos = cadenaDigitos.toCharArray();
 
-        for (char digito : vectorDeDigitos){ //cambiar por un for normal, aunque se esta utilizando el patron Iterator
+        for (char digito : vectorDeDigitos){
 
-            if(!Character.isDigit(digito)){ //Valida que el caracter sea un digito
+            if(!Character.isDigit(digito)){
                 throw new IllegalArgumentException("Caracter " + digito
                         + " no es un digito");
             }
@@ -135,126 +138,35 @@ public class LcdImpresor {
 
     /**
      *
-     * Metodo encargado de definir los segmentos que componen un digito y
-     * a partir de los segmentos adicionar la representacion del digito a la matriz
+     * definie los segmentos que componen un digito
      *
      * @param digitoIndividual contiene un digito para agregar a la matriz
+     * @see SieteSegmento
      */
     private void adicionarDigito(int digitoIndividual){
 
-        // Establece los segmentos de cada numero
-        List<Integer> listaSegmentos = new ArrayList<>();
-        listaSegmentos = seleccionarDigito(listaSegmentos);
+        List<Integer> listaSegmentos;
 
+        // ListaSegmentos adquiere la lista de segmentos que componen el digito ingresado
+        listaSegmentos = sieteSegmentos.representarDigito(digitoIndividual);
 
+        Iterator<Integer> iterator = listaSegmentos.iterator();
 
-        switch (digitoIndividual){
-            case 1:
-                listaSegmentos = seleccionarDigito(listaSegmentos);
-                listaSegmentos.add(3); //este SegList se utiliza para agregar el tipo de "segmento" para formar el numero que queremos
-                listaSegmentos.add(4);
-                break;
-            case 2:
-                listaSegmentos.add(5);
-                listaSegmentos.add(3);
-                listaSegmentos.add(6);
-                listaSegmentos.add(2);
-                listaSegmentos.add(7);
-                break;
-            case 3:
-                listaSegmentos.add(5);
-                listaSegmentos.add(3);
-                listaSegmentos.add(6);
-                listaSegmentos.add(4);
-                listaSegmentos.add(7);
-                break;
-            case 4:
-                listaSegmentos.add(1);
-                listaSegmentos.add(6);
-                listaSegmentos.add(3);
-                listaSegmentos.add(4);
-                break;
-            case 5:
-                listaSegmentos.add(5);
-                listaSegmentos.add(1);
-                listaSegmentos.add(6);
-                listaSegmentos.add(4);
-                listaSegmentos.add(7);
-                break;
-            case 6:
-                listaSegmentos.add(5);
-                listaSegmentos.add(1);
-                listaSegmentos.add(6);
-                listaSegmentos.add(2);
-                listaSegmentos.add(7);
-                listaSegmentos.add(4);
-                break;
-            case 7:
-                listaSegmentos.add(5);
-                listaSegmentos.add(3);
-                listaSegmentos.add(4);
-                break;
-            case 8:
-                listaSegmentos.add(1);
-                listaSegmentos.add(2);
-                listaSegmentos.add(3);
-                listaSegmentos.add(4);
-                listaSegmentos.add(5);
-                listaSegmentos.add(6);
-                listaSegmentos.add(7);
-                break;
-            case 9:
-                listaSegmentos.add(1);
-                listaSegmentos.add(3);
-                listaSegmentos.add(4);
-                listaSegmentos.add(5);
-                listaSegmentos.add(6);
-                listaSegmentos.add(7);
-                break;
-            case 0:
-                listaSegmentos.add(1);
-                listaSegmentos.add(2);
-                listaSegmentos.add(3);
-                listaSegmentos.add(4);
-                listaSegmentos.add(5);
-                listaSegmentos.add(7);
-                break;
-            default:
-                break;
-        }
-
-        Iterator<Integer> iterator = listaSegmentos.iterator(); // mete toda la lista de "segList" en un Iterator
-
-        while (iterator.hasNext()) { //mientras exista objetos en el iterator mientras tenga algun valor siguiente, sigue en el while
-            adicionarSegmento(iterator.next());  //adiciona un segmento en el valor actual del Iterador
+        while (iterator.hasNext()) {
+            adicionarSegmento(iterator.next());
         }
     }
-
-    public ArrayList<Integer> seleccionarDigito(int numeros){
-
-        List<Integer> elementosDigitos = new ArrayList<>();
-
-        if (numeros==1){
-            elementosDigitos.add(1)
-        }
-
-
-
-
-
-    }
-
 
     /**
+     * fija un segmento a la matriz de Impresion
      *
-     * Metodo encargado de un segmento a la matriz de Impresion
-     *
-     * @param segmento Segmento a adicionar
+     * @param segmento contiene la parte del segmento a adicionar
+     * @see Matriz
      */
-    private void adicionarSegmento(int segmento) { // metodo que se encarga de clasificar la creacion de un numero del 0 al 9
+    private void adicionarSegmento(int segmento) {
 
-        switch (segmento) { //son solo 7 cases porque así se define el "Seven Segment Display" para la visualizacion de numeros
-            case 1: // agrega el segmento superior o numero 1 del "Seven Segment Display"
+        switch (segmento) {
+            case 1:
                 adicionarLinea(this.matriz.matrizImpresion, this.matriz.puntofijo1, POSICION_Y,
                         this.matriz.tamaño, CARACTER_VERTICAL);
                 break;
@@ -289,27 +201,26 @@ public class LcdImpresor {
 
     /**
      *
-     * Metodo encargado de añadir una linea a la matriz de Impresion
+     * verifica y añade una linea a la matriz de Impresion
      *
      * @param matriz Matriz Impresion
      * @param puntoFijo Punto Pivote
-     * @param posFija Posicion Fija
+     * @param posicionFija Posicion Fija
      * @param tamañoSegmento Tamaño Segmento
      * @param caracter Caracter Segmento
      */
-    private void adicionarLinea(String[][] matriz, int[] puntoFijo, String posFija, int tamañoSegmento, String caracter) // recibe la matriz completa, un punto fijo para empezar a dibujar la linea, una posicion fija sea "X" o "Y", el tamaño y el caracter a pintar
-    {
-        // sea  "|" o "-"
-        if (posFija.equalsIgnoreCase(POSICION_X)){
+    private void adicionarLinea(String[][] matriz, int[] puntoFijo, String posicionFija, int tamañoSegmento, String caracter){
+
+        if (posicionFija.equalsIgnoreCase(POSICION_X)){
             for (int i = 1; i <= tamañoSegmento; i++){
-                int valor = puntoFijo[1] + i; //punto[1] (en la posicion 1) suma 1 para ir pasando de espacio sea horizontal o vertical
-                matriz[puntoFijo[0]][valor] = caracter; //aqui se mueve el espacio de la matriz por la columna hasta que llegue al valor se "tamaño" deteniendo el for y llenando lo requerido
+                int valor = puntoFijo[1] + i;
+                matriz[puntoFijo[0]][valor] = caracter;
             }
         }
-        else if (posFija.equalsIgnoreCase(POSICION_Y)){
+        else if (posicionFija.equalsIgnoreCase(POSICION_Y)){
             for (int j = 1; j <= tamañoSegmento; j++){
                 int valor = puntoFijo[0] + j;
-                matriz[valor][puntoFijo[1]] = caracter; //aqui se mueve el espacio de la matriz por la fila hasta que llegue al valor se "tamaño" deteniendo el for y llenando lo requerido
+                matriz[valor][puntoFijo[1]] = caracter;
             }
         }
     }
